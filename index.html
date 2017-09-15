@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">    
+
+    <style>
+        .card {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: .25rem;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .list-data {
+            display: inline-block;
+            font-size: 1.5em;
+        }
+
+        .list-btn {
+            float: right;
+        }
+
+    </style>
+  </head>
+
+  <body>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h3>The List Maker to End All List Makers</h3>
+                    <h5 class="text-muted">Make lists and, yea, thats about it.  Pretty lame.</h5>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container" style="padding-top:3em;">
+            <div class="row">
+                <div class="col-md-offset-2 col-md-4">
+                    <h4>Various ways to add items:</h4>
+                    <div class="card">
+                        <div class="form-group">
+                            <label for="listInput">Add item with input component</label>
+                            <input type="text" class="form-control" name="listInput" id="listInput" maxlength="20" placeholder="Add list items in here...">
+                        </div>
+                        <button class="btn btn-primary" type="button" id="addItem">Add Item</button>
+                    </div>
+                    <div class="card">
+                        <label>Add item with modal component</label>
+                        <button class="btn btn-success" type="button" id="addModal" data-toggle="modal" data-target="#myModal">Launch Item Add Modal</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h4>See your list here:</h4>
+                    <div class="card">
+                        <h5 class="text-center">Your list of items</h5>
+                        <ul id="listArea" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add item via modal</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="listInputModal">Add item with modal component</label>
+                    <input type="text" class="form-control" name="listInputModal" id="listInputModal" placeholder="Add list items in here...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Nvm</button>
+                <button class="btn btn-primary" type="button" id="addItemModal">Add Item</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="js/componentControllers/jquery.normalInputControl.js"></script>
+    <script src="js/componentControllers/jquery.listControl.js"></script>
+    <script src="js/componentControllers/jquery.modalInputControl.js"></script>
+    <script src="js/jquery.validatorFunctions.js"></script>
+    <script src="js/jquery.utilityFunctions.js"></script>
+    <script>
+
+        /*
+         *  The idea here is so make a "component controller" for each section/component of the page we want to control.
+         *  This way the logic for each section/component lives in its respective component controller, and it is not as much of a mess.
+         *  This also allows us to create utility functions and various validation functions, and re-use them.
+         *  We will at times need these component controllers to talk to each other so they can re-use functions from each other,
+         *  we can accomplish this by extending the jQuery object to create our own, then we can add the component controllers to it.
+         */
+
+        // Create a new object by extending jQuery (so it can be globally availible without effecting the normal jQuery namespace)
+        var PageControls = jQuery.extend();
+
+        /*
+         *  You will be able to call any object, function, property, etc, that you attach to the new PageControls object
+         *  from anywhere, since it is a clone essentially of the intial jQuery object.  We just need to add all of our
+         *  "component controllers" to this new PageControls object and then they can talk to each other
+         */
+
+        // Add all of our component controllers and utility objects to it
+
+        // Add object to extended jQuery object
+        PageControls.validatorFunctions = $.fn.validatorFunctions(); // For various validations we need to do, so we can re-use them
+        // Initialize it
+        PageControls.validatorFunctions.init();
+
+        // Add object to extended jQuery object
+        PageControls.utilityFunctions = $.fn.utilityFunctions(); // For various utility functions we will want to use all over (such as showing an hiding elements, clearing inputs, etc)
+        PageControls.utilityFunctions.init();
+
+        // Add object to extended jQuery object.  This is the component controller for the "normal" input area.
+        PageControls.normalInputControls = $.fn.normalInputControls({
+            Form: {
+                addItemBtnId: 'addItem',
+                itemInputId: 'listInput'
+            }
+        });
+        // Initialize it
+        PageControls.normalInputControls.init();
+
+        // Add object to extended jQuery object.  This is the component controller for the modal and its input.
+        PageControls.modalInputControls = $.fn.modalInputControls({
+            Form: {
+                addItemBtnId: 'addItemModal',
+                itemInputId: 'listInputModal'
+            },
+            Modal: {
+                selectorId: 'myModal'
+            }
+        });
+        // Initialize it
+        PageControls.modalInputControls.init();
+
+        // Add object to extended jQuery object.  This is the component controller for the list.
+        PageControls.listControls = $.fn.listControls({
+            List: {
+                selectorId: 'listArea',
+                itemClass: 'list-group-item',
+                listBtnClass: 'list-btn'
+            }
+        });
+        // Initialize it
+        PageControls.listControls.init();
+    </script>
+</body>
+</html>
+
